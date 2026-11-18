@@ -61,7 +61,11 @@ What it does:
    (needs PipeWire running — if you install from a TTY, run `./install.sh --configs` again after `startx`)
 
 
-**What's new:** see [CHANGELOG.md](CHANGELOG.md) (current version: **0.9.0**).
+**What's new:** see [CHANGELOG.md](CHANGELOG.md) (current version: **0.10.0**).
+
+## Bar
+Hover an item for details (network, volume, battery time left, CPU…); click the date for a calendar (with the
+Persian date); CPU and RAM sit on the bar (click: htop).
 
 ## System monitor
 Sidebar → **System**: CPU (with temperature), memory, disk and the busiest apps; **htop** opens in one click.

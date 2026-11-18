@@ -309,6 +309,28 @@ ShellRoot {
     }
 
     // =========================================
+    // BAR POPUPS: calendar (click the clock) and tooltips (hover a bar item)
+    // =========================================
+
+    CalendarPopup {
+        id: calendar
+        barHeight: root.barHeight
+        gap: root.edgeMargin
+    }
+    IpcHandler {
+        target: "calendar"
+        function toggle(): void { calendar.open = !calendar.open }
+        function close(): void { calendar.open = false }
+    }
+
+    BarTooltip { id: tooltip }
+    IpcHandler {
+        target: "tooltip"
+        function hover(item: string, x: int, y: int, w: int): void { tooltip.show(item, x, y, w) }
+        function leave(): void { tooltip.hide() }
+    }
+
+    // =========================================
     // IPC COMMANDS
     // =========================================
 
