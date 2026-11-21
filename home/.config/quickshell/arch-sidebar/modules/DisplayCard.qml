@@ -3,7 +3,7 @@ import Quickshell
 import Quickshell.Io
 
 // Display settings as an accordion (like the Wi-Fi networks list):
-// collapsed = one-line summary, expanded = screen scale, bar size, font size, resolution.
+// collapsed = one-line summary, expanded = scale (per screen), bar size, font size, resolution.
 // Everything goes through ~/.local/bin/dwm-display.
 Item {
     id: root
@@ -14,7 +14,9 @@ Item {
     signal requestClose()
 
     property bool expanded: false
-    property int scale: 100
+    property int scale: 100            // the selected screen's scale
+    property var screens: []           // [{ name, scale }] from "scales=out:pct,…"
+    property string screen: ""         // selected screen ("" = the primary, first in the list)
     property real barScale: 1.0
     property int fontSize: 0
     property string resolution: ""
@@ -31,11 +33,16 @@ Item {
             onStreamFinished: {
                 for (const kv of this.text.trim().split(" ")) {
                     const [k, v] = kv.split("=")
-                    if (k === "scale") root.scale = Number(v)
+                    if (k === "scales") root.screens = v.split(",").filter(x => x).map(x => {
+                        const i = x.lastIndexOf(":"); return { name: x.slice(0, i), scale: Number(x.slice(i + 1)) || 100 } })
+                    else if (k === "scale" && !root.screen) root.scale = Number(v)
                     else if (k === "bar") root.barScale = Number(v) || 1
                     else if (k === "font") root.fontSize = Number(v)
                     else if (k === "res") root.resolution = v
                 }
+                const sel = root.screens.find(x => x.name === root.screen)
+                if (sel) root.scale = sel.scale
+                else root.screen = ""
             }
         }
     }
@@ -72,7 +79,7 @@ Item {
                 spacing: 3
                 Text { text: "Screen & bar"; color: "#c0caf5"; font.pixelSize: 14; font.bold: true }
                 Text {
-                    text: "screen " + root.scale + "%  ·  bar " + root.barScale.toFixed(2).replace(/\.?0+$/, "") + "×  ·  " + (root.resolution || "…")
+                    text: (root.screens.length > 1 ? root.screens.map(x => x.scale + "%").join(" ") : "screen " + root.scale + "%") + "  ·  bar " + root.barScale.toFixed(2).replace(/\.?0+$/, "") + "×  ·  " + (root.resolution || "…")
                     color: "#7aa2f7"
                     font.pixelSize: 11
                     width: header.width - 44
@@ -124,12 +131,28 @@ Item {
             Rectangle { width: parent.width; height: 1; color: "#414868" }
 
             RowTitle { title: "Screen scale"; value: root.scale + "%" }
+            // several screens: pick which one (each has its own scale)
+            ChipRow {
+                visible: root.screens.length > 1
+                values: root.screens.map(x => x.name)
+                current: root.screen || (root.screens[0] ? root.screens[0].name : "")
+                label: v => v.replace("DisplayPort-", "DP-").replace("HDMI-A-", "HDMI-")
+                onPicked: v => { root.screen = v; const x = root.screens.find(s => s.name === v); if (x) root.scale = x.scale }
+            }
             ChipRow {
                 values: root.scales
                 current: root.scale
-                onPicked: v => { root.scale = v; root.run(["scale", String(v)]) }
+                onPicked: v => {
+                    root.scale = v
+                    root.run(["scale", String(v)].concat(root.screen ? [root.screen] : []))
+                }
             }
-            Text { width: parent.width; wrapMode: Text.WordWrap; text: "Everything gets bigger at once: bar, windows, menus, this sidebar. Instant."; color: "#565f89"; font.pixelSize: 10 }
+            Text {
+                width: parent.width; wrapMode: Text.WordWrap; color: "#565f89"; font.pixelSize: 10
+                text: root.screens.length > 1
+                      ? "Only the selected screen: its bar, windows and menus get bigger; the other screens stay as they are and stay attached to it."
+                      : "Everything gets bigger at once: bar, windows, menus, this sidebar. Instant."
+            }
 
             RowTitle { title: "Bar size"; value: root.barScale.toFixed(2).replace(/\.?0+$/, "") + "×" }
             ChipRow {
@@ -138,7 +161,7 @@ Item {
                 label: v => Math.round(v * 100) + "%"
                 onPicked: v => { root.barScale = v; root.run(["bar", String(v)]) }
             }
-            Text { width: parent.width; wrapMode: Text.WordWrap; text: "Only the dwm bar: its text, icons and height (dwm restarts in place, windows stay)."; color: "#565f89"; font.pixelSize: 10 }
+            Text { width: parent.width; wrapMode: Text.WordWrap; text: "Only the dwm bar, on every screen, on top of each screen's scale: its text, icons and height (dwm restarts in place, windows stay)."; color: "#565f89"; font.pixelSize: 10 }
 
             // resolution
             Row {

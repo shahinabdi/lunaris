@@ -4,7 +4,7 @@
 
 Arch Linux + [dwm](https://github.com/shahinabdi/lunaris-dwm) (X11) desktop: Tokyo Night colours, a Quickshell
 quick-settings sidebar, rofi menus, PipeWire with a noise-cancelling mic, screenshots, clipboard history,
-whole-screen scaling and an in-place dwm restart.
+per-screen scaling, drag-and-drop monitor layout and an in-place dwm restart.
 
 The dwm source and its helper scripts (`dwm-shot`, `dwm-clip`, `dwm-power`, `dwm-display`, `dwm-dev`,
 `dwm-help`, `dwm-status`, …) live in the **[lunaris-dwm](https://github.com/shahinabdi/lunaris-dwm)** repo; this repo holds everything else and installs both.
@@ -66,6 +66,12 @@ What it does:
 ## Bar
 Hover an item for details (network, volume, battery time left, CPU…); click the date for a calendar (with the
 Persian date); CPU and RAM sit on the bar (click: htop).
+
+## Monitors
+Sidebar → ⚙ **Settings → Monitors**: drag the screens on the map to arrange them (they snap to each other's edges
+like magnets), turn screens on/off, pick the resolution, the **scale of each screen** (e.g. 4K at 175 %, the others
+at 100 %) and the primary; save the layout so it comes back when the same screens are plugged in.
+In a terminal: `dwm-display scale 150 HDMI-A-0`, `dwm-monitor set DP-1=1920,0`, `dwm-monitor list`.
 
 ## System monitor
 Sidebar → **System**: CPU (with temperature), memory, disk and the busiest apps; **htop** opens in one click.
@@ -139,7 +145,7 @@ The defaults are `rules.h` / `tags.h` in the dwm repo.
 | Mod+v | clipboard history |
 | Mod+Shift+s / Print | screenshot region / full screen (Mod+Print: menu) |
 | Mod+Escape | power menu |
-| Mod+Shift+d | display: scale, font size, resolution |
+| Mod+Shift+d | display: scale (per screen), font size, resolution |
 | Mod+Ctrl+Shift+q | restart dwm in place |
 | Mod+; / Mod+, (QWERTY: Mod+. / Mod+,) | focus next / previous screen (each screen has its own workspaces) |
 | Mod+Shift+; / , | move window to next / previous screen |
