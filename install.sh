@@ -216,7 +216,7 @@ build_dwm() {
 # ---------------------------------------------------------------- system
 # brightness of external monitors (DDC/CI, dwm-bright): i2c-dev at boot, /dev/i2c-* for this user
 setup_ddc() {
-	echo i2c-dev | run sudo tee /etc/modules-load.d/i2c-dev.conf >/dev/null
+	run sudo sh -c 'echo i2c-dev > /etc/modules-load.d/i2c-dev.conf'
 	run sudo modprobe i2c-dev
 	getent group i2c >/dev/null || run sudo groupadd --system i2c
 	run sudo usermod -aG i2c "$USER"
